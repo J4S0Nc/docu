@@ -309,6 +309,7 @@ namespace Docu.Output.Rendering
 
             foreach (MethodParameter parameter in method.Parameters)
             {
+                sb.Append("\t");
                 if (markExtensionMethodInstance)
                 {
                     sb.Append("this ");
@@ -316,8 +317,8 @@ namespace Docu.Output.Rendering
                 }
                 sb.Append(Format(parameter.Reference));
                 sb.Append(" ");
-                sb.Append(parameter.Name);
-                sb.Append(", ");
+                sb.Append(parameter.PrettyName);
+                sb.Append(",\n");
             }
 
             if (sb.Length > 0)

@@ -23,14 +23,6 @@
 	</header>
 	<section>
     <div class="sub-header">
-	<if condition="Namespace.HasInterfaces">
-			<h3 class="section">Interfaces</h3>
-			<ul>
-				<for each="var type in Namespace.Interfaces">
-					<li>${Format(type)}</li>
-				</for>
-			</ul>
-		</if>
 		<if condition="Namespace.HasClasses">
 			<h3 class="section">Classes</h3>
 			<ul>
@@ -39,15 +31,15 @@
 				</for>
 			</ul>
 		</if>
-		<if condition="Namespace.HasEnums">
-			<h3 class="section">Enums</h3>
+		
+		<if condition="Namespace.HasInterfaces">
+			<h3 class="section">Interfaces</h3>
 			<ul>
-				<for each="var type in Namespace.Enums">
+				<for each="var type in Namespace.Interfaces">
 					<li>${Format(type)}</li>
 				</for>
 			</ul>
 		</if>
-		
 		<p if="!Namespace.HasTypes">This namespace is empty.</p>
 	</div>
 	</section>

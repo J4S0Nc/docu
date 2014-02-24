@@ -25,7 +25,7 @@ namespace Docu.Documentation
 
         public IEnumerable<DeclaredType> Classes
         {
-            get { return Types.Where(x => !x.IsInterface); }
+            get { return Types.Where(x => x.IsClass); }
         }
 
         public bool HasClasses
@@ -43,6 +43,15 @@ namespace Docu.Documentation
             get { return Interfaces.Any(); }
         }
 
+        public IEnumerable<DeclaredType> Enums
+        {
+            get { return Types.Where(x => x.IsEnum); }
+        }
+
+        public bool HasEnums
+        {
+            get { return Enums.Any(); }
+        }
         public string FullName
         {
             get { return Name; }

@@ -2,13 +2,50 @@
   <h2 class="fixed">Types in ${Namespace.PrettyName}</h2>
 	<div class="scroll">
 		<ul>
-				<li each="var type in Namespace.Types">
+      <li if="Namespace.HasInterfaces">Interfaces
+        <ul>
+          <li each="var type in Namespace.Interfaces">
+            <if condition="type == Type">
+              ${Format(type, class => "current")}
+              <else />
+              ${Format(type)}
+            </if>
+          </li>          
+        </ul>
+      </li>
+      <li if="Namespace.HasClasses">
+        Classes
+        <ul>
+          <li each="var type in Namespace.Classes">
+            <if condition="type == Type">
+              ${Format(type, class => "current")}
+              <else />
+              ${Format(type)}
+            </if>
+          </li>
+        </ul>
+      </li>
+      <li if="Namespace.HasEnums">
+        Enums
+        <ul>
+          <li each="var type in Namespace.Enums">
+            <if condition="type == Type">
+              ${Format(type, class => "current")}
+              <else />
+              ${Format(type)}
+            </if>
+          </li>
+        </ul>
+      </li>
+      
+      
+				<!--<li each="var type in Namespace.Types">
           <if condition="type == Type">
             ${Format(type, class => "current")}
           <else />
             ${Format(type)}
           </if>
-        </li>
+        </li>-->
 		</ul>
 	</div>
 </nav>

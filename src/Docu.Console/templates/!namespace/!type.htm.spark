@@ -24,57 +24,64 @@
 	</header>
 	<section>
 		<header>
-		<p><strong>Namespace</strong> ${Namespace.Name}</p>
+		<p><strong>Namespace</strong> ${Format(Namespace)}</p>
 		<p if="Type.ParentType != null && Type.ParentType.PrettyName != 'object'"><strong>Parent</strong> ${Format(Type.ParentType)}</p>
 		<p if="Type.Interfaces.Count > 0"><strong>Interfaces</strong> ${WriteInterfaces(Type.Interfaces)}</p>
 		</header>
-    <div class="sub-header">
-		<if condition="(Type.Summary != null && Type.Summary.Children.Count() > 0) || (Type.Remarks != null && Type.Remarks.Children.Count() > 0)">
-			<div id="summary">
-				<comment content="Type.Summary" />
-				<remarks content="Type.Remarks" />
-				<example content="Type.Example" />
-			</div>
+    
+	
+	<div class="sub-header">
+	<if condition="(Type.Summary != null && Type.Summary.Children.Count() > 0) || (Type.Remarks != null && Type.Remarks.Children.Count() > 0)">
+		<div id="summary">
+			<comment content="Type.Summary" />
+			<remarks content="Type.Remarks" />
+			<example content="Type.Example" />
+		</div>
+	</if>
+		<if condition="Type.IsEnum">
+		<enums enums="Type.Enums" title="'Enumeration'" /></div>
 		</if>
-		
-		<if condition="Type.Events.Count > 0">
-			<h3 class="section">Events</h3>
-			<ul>
-				<li each="var ev in Type.Events">${Format(ev)}</li>
-			</ul>
-		</if>
-		
-		<if condition="Type.Methods.Count > 0">
-			<h3 class="section">Methods</h3>
-			<ul>
-				<li each="var method in Type.Methods">${Format(method)}</li>
-			</ul>
-		</if>
-		
+		<if condition="!Type.IsEnum">
+
+
 		<if condition="Type.Properties.Count > 0">
 			<h3 class="section">Properties</h3>
 			<ul>
-				<li each="var property in Type.Properties">${Format(property)}</li>
+				<li each="var property in Type.Properties">${Format(property)} ${Format(property.Summary)}</li>
 			</ul>
 		</if>
 		
 		<if condition="Type.Fields.Count > 0">
 			<h3 class="section">Fields</h3>
 			<ul>
-				<li each="var field in Type.Fields">${Format(field)}</li>
+				<li each="var field in Type.Fields">${Format(field)} ${Format(field.Summary)}</li>
+			</ul>
+		</if> 
+		<if condition="Type.Methods.Count > 0">
+			<h3 class="section">Methods</h3>
+			<ul>
+				<li each="var method in Type.Methods">${Format(method)} ${Format(method.Summary)}</li>
 			</ul>
 		</if>
-	</div>
-	<events events="Type.Events" title="'Events'" />
+		<if condition="Type.Events.Count > 0">
+			<h3 class="section">Events</h3>
+			<ul>
+				<li each="var ev in Type.Events">${Format(ev)} ${Format(ev.Summary)}</li>
+			</ul>
+		</if>
+		</div>
 	
-	<var publicInstanceMethods="Type.Methods.Where(x => x.IsPublic && !x.IsStatic)" />
-	<methods methods="publicInstanceMethods" title="'Public instance methods'" />
+		<properties properties="Type.Properties" title="'Public properties'" />
+		<fields fields="Type.Fields" title="'Public fields'" />
 	
-	<var publicStaticMethods="Type.Methods.Where(x => x.IsPublic && x.IsStatic)" />
-	<methods methods="publicStaticMethods" title="'Public static methods'" />
+		<var publicStaticMethods="Type.Methods.Where(x => x.IsPublic && x.IsStatic)" />
+		<methods methods="publicStaticMethods" title="'Static Methods'" />
+
+		<var publicInstanceMethods="Type.Methods.Where(x => x.IsPublic && !x.IsStatic)" />
+		<methods methods="publicInstanceMethods" title="'Methods'" />
 	
-	<properties properties="Type.Properties" title="'Public properties'" />
-	<fields fields="Type.Fields" title="'Public fields'" />
+		<events events="Type.Events" title="'Events'" />	
+	</if>
 	</section>
 	</article>
 	<use file="../_common_footer" />

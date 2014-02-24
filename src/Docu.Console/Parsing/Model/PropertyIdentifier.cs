@@ -6,14 +6,15 @@ namespace Docu.Parsing.Model
     {
         private readonly TypeIdentifier typeId;
 
-        public PropertyIdentifier(string name, bool hasGet, bool hasSet, TypeIdentifier typeId)
+        public PropertyIdentifier(string name, bool hasGet, bool hasSet,bool isStatic, TypeIdentifier typeId)
             : base(name)
         {
             this.typeId = typeId;
             HasGet = hasGet;
             HasSet = hasSet;
+            IsStatic = isStatic;
         }
-
+        public bool IsStatic { get; private set; }
         public bool HasGet { get; private set; }
         public bool HasSet { get; private set; }
 

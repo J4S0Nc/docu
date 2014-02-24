@@ -33,9 +33,17 @@ namespace Docu.Documentation
 
         public bool IsInterface
         {
-            get { return representedType == null ? false : representedType.IsInterface; }
+            get { return representedType != null && representedType.IsInterface; }
         }
 
+        public bool IsEnum
+        {
+            get { return representedType != null && representedType.IsEnum; }
+        }
+        public bool IsClass
+        {
+            get { return representedType != null && representedType.IsClass; }
+        }
         public IReferencable ParentType { get; set; }
         public IList<IReferencable> Interfaces { get; set; }
 
@@ -58,6 +66,10 @@ namespace Docu.Documentation
         {
             get { return fields; }
         }
+        public IList<Field> Enums
+        {
+            get { return fields; }
+        }
 
         public void Resolve(IDictionary<Identifier, IReferencable> referencables)
         {
@@ -75,7 +87,7 @@ namespace Docu.Documentation
                 representedType = type.representedType;
                 ParentType = type.ParentType;
                 Interfaces = type.Interfaces;
-
+                
                 if (!Namespace.IsResolved)
                     Namespace.Resolve(referencables);
                 if (ParentType != null && !ParentType.IsResolved)

@@ -42,7 +42,8 @@ namespace Docu.Documentation.Generators
 						Identifier.FromType(parameter.ParameterType),
 						parameter.ParameterType,
 						Namespace.Unresolved(Identifier.FromNamespace(parameter.ParameterType.Namespace)));
-					var docParam = new MethodParameter(parameter.Name, reference);
+
+					var docParam = new MethodParameter(parameter.Name, parameter.IsOptional, parameter.DefaultValue, reference);
 
 					ParseParamSummary(association, docParam);
 
@@ -56,6 +57,7 @@ namespace Docu.Documentation.Generators
 				if (type == null) return;
 				type.AddMethod(doc);
 			} catch (IOException ex) {
+                if (type == null) return;
 				var doc = Method.Unresolved(
 					Identifier.FromMethod(association.Method, association.TargetType),
 					type, association.Method, new NullReference());

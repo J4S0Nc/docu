@@ -28,6 +28,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\docu.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -280,6 +281,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="templates\!namespace\_enums.spark">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="templates\_common_footer.spark">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

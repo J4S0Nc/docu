@@ -21,14 +21,14 @@ namespace Docu.Documentation
 
             var ns = FindNamespace(association, namespaces);
             var type = FindType(ns, association);
-
+            var isStatic = association.Property.GetGetMethod().IsStatic;
             var propertyReturnType =
                 DeclaredType.Unresolved(Identifier.FromType(association.Property.PropertyType),
                                         association.Property.PropertyType,
                                         Namespace.Unresolved(
                                             Identifier.FromNamespace(association.Property.PropertyType.Namespace)));
-            var doc = Property.Unresolved(Identifier.FromProperty(association.Property, association.TargetType), type, propertyReturnType);
-
+            var doc = Property.Unresolved(Identifier.FromProperty(association.Property, association.TargetType, isStatic), type, propertyReturnType);
+            
             ParseSummary(association, doc);
             ParseValue(association, doc);
             ParseRemarks(association, doc);

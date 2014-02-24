@@ -30,7 +30,7 @@ mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bol
 del { text-decoration: line-through; }
 abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
 table { border-collapse: collapse; border-spacing: 0; }
-hr { clear: both; display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
 input, select { vertical-align: middle; }
 
 body { font:13px/1.231 sans-serif; }
@@ -38,7 +38,7 @@ select, input, textarea, button { font:99% sans-serif; }
 pre, code, kbd, samp { font-family: monospace, sans-serif; }
 
 html { overflow-y: scroll; }
-a:hover, a:active { outline: dotted; }
+a:hover, a:active { outline: none; }
 ul, ol { margin-left: 2em; }
 ol { list-style-type: decimal; }
 nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
@@ -49,7 +49,7 @@ sub, sup { font-size: 75%; line-height: 0; position: relative; }
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
 
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word;  }
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 15px; }
 textarea { overflow: auto; } 
 .ie6 legend, .ie7 legend { margin-left: -7px; } 
 input[type="radio"] { vertical-align: text-bottom; }
@@ -63,9 +63,9 @@ input:invalid, textarea:invalid { -moz-box-shadow: 0px 0px 5px red; -webkit-box-
 .no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
 
 
-::-moz-selection{ background: #008000; color:#fff; }
-::selection { background:#008000; color:#fff; }
-a:link { -webkit-tap-highlight-color: #008000; }
+::-moz-selection{ background: #FF5E99; color:#fff; }
+::selection { background:#FF5E99; color:#fff; }
+a:link { -webkit-tap-highlight-color: #FF5E99; }
 button {  width: auto; overflow: visible; }
 .ie7 img { -ms-interpolation-mode: bicubic; }
 
@@ -123,17 +123,17 @@ nav#namespaces {
 	position: absolute;
 	top: 42px;
 	left: 8px;
+	bottom: 8px;
 	width: 384px;
-    height: 84px;
 	overflow: hidden;
 }
 
 nav#types {
 	position: absolute;
-	top: 132px;
-	bottom: 8px;
-	left: 8px;
-	width: 384px;
+	top: 42px;
+	right: 8px;
+	left: 400px;
+	height: 204px;
 	background-color: #fff;
 	overflow: hidden;
 }
@@ -141,7 +141,7 @@ nav#types {
 article {
 	position: absolute;
 	left: 400px;
-	top: 42px;
+	top: 256px;
 	bottom: 40px;
 	right: 8px;
 	background-color: #fff;
@@ -216,8 +216,7 @@ h5 {
 	margin: 8px 0px;
 }
 
-dl { clear: left; border-bottom:  #cccccc thin dashed;}
-dl dt {	width: 280px; float: left; }
+dl dt {	width: 180px; float: left; }
 dl dd { margin-left: 180px;  }
         
        	

@@ -32,7 +32,7 @@ namespace Docu.Parsing.Model
         public static TypeIdentifier FromType(Type type)
         {
             return type.IsGenericParameter
-                ? new TypeIdentifier(GENERIC_PARAMATER_PREFIX + type.GenericParameterPosition, GENERIC_TYPE_NAMESPACE) 
+                ? new TypeIdentifier(GENERIC_PARAMATER_PREFIX + type.GenericParameterPosition, GENERIC_TYPE_NAMESPACE)
                 : new TypeIdentifier(type.Name, type.Namespace);
         }
 
@@ -44,20 +44,24 @@ namespace Docu.Parsing.Model
             if (method.IsGenericMethod)
                 name += GENERIC_PARAMATER_PREFIX + method.GetGenericArguments().Length;
 
-			try {
-				foreach (ParameterInfo param in method.GetParameters()) {
-					parameters.Add(FromType(param.ParameterType));
-				}
-			} catch (IOException ex) {
-				return (MethodIdentifier.FromException(name, FromType(type), ex));
-			}
+            try
+            {
+                foreach (ParameterInfo param in method.GetParameters())
+                {
+                    parameters.Add(FromType(param.ParameterType));
+                }
+            }
+            catch (IOException ex)
+            {
+                return (MethodIdentifier.FromException(name, FromType(type), ex));
+            }
 
-        	return new MethodIdentifier(name, parameters.ToArray(), method.IsStatic, method.IsPublic, FromType(type));
+            return new MethodIdentifier(name, parameters.ToArray(), method.IsStatic, method.IsPublic, FromType(type));
         }
 
-        public static PropertyIdentifier FromProperty(PropertyInfo property, Type type)
+        public static PropertyIdentifier FromProperty(PropertyInfo property, Type type, bool isStatic)
         {
-            return new PropertyIdentifier(property.Name, property.CanRead, property.CanWrite, FromType(type));
+            return new PropertyIdentifier(property.Name, property.CanRead, property.CanWrite, isStatic, FromType(type));
         }
 
         public static FieldIdentifier FromField(FieldInfo field, Type type)
@@ -101,7 +105,7 @@ namespace Docu.Parsing.Model
             string typeName = GetTypeName(name);
             string propertyName = GetMethodName(name);
 
-            return new PropertyIdentifier(propertyName, false, false, FromTypeString(typeName));
+            return new PropertyIdentifier(propertyName, false, false, false, FromTypeString(typeName));
         }
 
         private static EventIdentifier FromEventName(string name)
@@ -146,7 +150,7 @@ namespace Docu.Parsing.Model
                 ns = "Unknown";
                 type = name;
             }
-            
+
 
             return new TypeIdentifier(type, ns);
         }
@@ -185,7 +189,7 @@ namespace Docu.Parsing.Model
             buildTypeLookup();
 
             var firstCharAfterParen = fullName.IndexOf("(") + 1;
-            var paramList = fullName.Substring(firstCharAfterParen, fullName.Length - firstCharAfterParen - 1) ;
+            var paramList = fullName.Substring(firstCharAfterParen, fullName.Length - firstCharAfterParen - 1);
 
             foreach (var paramName in ParseMethodParameterList(paramList))
             {
@@ -224,7 +228,7 @@ namespace Docu.Parsing.Model
             var startPosition = 0;
             while (startPosition < genericArguments.Length)
             {
-                var positionOfInterestingChar = genericArguments.IndexOfAny(new[] {START_GENERIC_ARGUMENTS, ','}, startPosition);
+                var positionOfInterestingChar = genericArguments.IndexOfAny(new[] { START_GENERIC_ARGUMENTS, ',' }, startPosition);
                 if (positionOfInterestingChar < 0)
                 {
                     return count;
@@ -251,7 +255,7 @@ namespace Docu.Parsing.Model
         {
             if (nameToType != null) return;
             nameToType = new Dictionary<string, Type>();
-            foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
                 {
@@ -274,7 +278,7 @@ namespace Docu.Parsing.Model
             var startPosition = 0;
             while (startPosition < methodParameters.Length)
             {
-                var positionOfInterestingChar = methodParameters.IndexOfAny(new[] {START_GENERIC_ARGUMENTS, ','}, startPosition);
+                var positionOfInterestingChar = methodParameters.IndexOfAny(new[] { START_GENERIC_ARGUMENTS, ',' }, startPosition);
                 if (positionOfInterestingChar < 0)
                 {
                     if (startPosition == 0)

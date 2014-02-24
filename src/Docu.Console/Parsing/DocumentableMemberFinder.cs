@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Docu.Parsing.Model;
 
 namespace Docu.Parsing
@@ -17,16 +18,20 @@ namespace Docu.Parsing
 
                 foreach (var method in type.GetMethods())
                 {
-                    if (method.IsSpecialName) continue;
+                    if (method.IsSpecialName || method.DeclaringType.Name.Equals("Object"))
+                        continue;
 
                     yield return new UndocumentedMethod(Identifier.FromMethod(method, type), method, type);
                 }
 
-                foreach (var property in type.GetProperties())
+                foreach (var property in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
                 {
-                    yield return new UndocumentedProperty(Identifier.FromProperty(property, type), property, type);
+                    yield return new UndocumentedProperty(Identifier.FromProperty(property, type, true), property, type);
                 }
-
+                foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                {
+                    yield return new UndocumentedProperty(Identifier.FromProperty(property, type, false), property, type);
+                }
                 foreach (var ev in type.GetEvents())
                 {
                     yield return new UndocumentedEvent(Identifier.FromEvent(ev, type), ev, type);

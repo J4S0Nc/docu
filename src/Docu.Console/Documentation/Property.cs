@@ -12,12 +12,13 @@ namespace Docu.Documentation
             Type = type;
             HasGet = identifier.HasGet;
             HasSet = identifier.HasSet;
+            IsStatic = identifier.IsStatic;
         }
 
         public DeclaredType Type { get; set; }
         public bool HasGet { get; private set; }
         public bool HasSet { get; private set; }
-
+        public bool IsStatic { get; private set; }
         public IReferencable ReturnType { get; set; }
 
         public string FullName

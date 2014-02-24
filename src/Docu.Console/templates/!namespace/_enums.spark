@@ -1,0 +1,12 @@
+﻿<if condition="enums.Count() > 0">
+  <h3 class="section">${title}</h3>
+
+  <div id="${e.Name}" class="method" each="var e in enums">
+    <h4><strong>${h(e.Name)}</strong></h4>
+    <div class="content">
+      <comment content="e.Summary" />
+      <remarks content="e.Remarks" />      
+      <example content="e.Example" />
+    </div>
+  </div>
+</if>

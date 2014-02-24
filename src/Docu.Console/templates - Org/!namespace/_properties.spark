@@ -3,7 +3,7 @@
 
 	<div id="${property.Name}" class="method" each="var property in properties">
 		<h4>
-      <if condition="property.IsStatic">static</if> ${Format(property.ReturnType)} <strong>${h(property.Name)}</strong> <if condition="property.HasGet">get;</if> <if condition="property.HasSet">set;</if>
+			${Format(property.ReturnType)} <strong>${h(property.Name)}</strong> <if condition="property.HasGet">get;</if> <if condition="property.HasSet">set;</if>
 		</h4>
 		<div class="content">
 			<comment content="property.Summary" />
