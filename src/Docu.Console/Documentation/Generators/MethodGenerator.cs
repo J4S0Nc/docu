@@ -1,68 +1,77 @@
 using System.Collections.Generic;
-using System.IO;
+using System.Reflection;
 using Docu.Parsing.Comments;
 using Docu.Parsing.Model;
 
 namespace Docu.Documentation.Generators
 {
-    internal class MethodGenerator : BaseGenerator
+    internal class MethodGenerator : BaseGenerator, IGenerator<DocumentedMethod>
     {
-        private readonly IDictionary<Identifier, IReferencable> matchedAssociations;
+        readonly IDictionary<Identifier, IReferencable> _matchedAssociations;
 
         public MethodGenerator(IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser)
             : base(commentParser)
         {
-            this.matchedAssociations = matchedAssociations;
+            _matchedAssociations = matchedAssociations;
         }
 
         public void Add(List<Namespace> namespaces, DocumentedMethod association)
         {
-            if (association.Method == null) return;
+            if (association.Method == null)
+            {
+                return;
+            }
 
-            var ns = FindNamespace(association, namespaces);
-            var type = FindType(ns, association);
+            DeclaredType type = FindType(association, namespaces);
 
-			try {
-				var methodReturnType = DeclaredType.Unresolved(
-					Identifier.FromType(association.Method.ReturnType),
-					association.Method.ReturnType,
-					Namespace.Unresolved(Identifier.FromNamespace(association.Method.ReturnType.Namespace)));
-				var doc = Method.Unresolved(
-					Identifier.FromMethod(association.Method, association.TargetType),
-					type, association.Method, methodReturnType);
+            DeclaredType methodReturnType = null;
+            if (association.Method.MemberType == MemberTypes.Method)
+            {
+                methodReturnType = DeclaredType.Unresolved(
+                    IdentifierFor.Type(((MethodInfo)association.Method).ReturnType),
+                    ((MethodInfo) association.Method).ReturnType,
+                    Namespace.Unresolved(IdentifierFor.Namespace(((MethodInfo)association.Method).ReturnType.Namespace)));
+            }
 
-				ParseSummary(association, doc);
-				ParseRemarks(association, doc);
-				ParseValue(association, doc);
-				ParseReturns(association, doc);
-				ParseExample(association, doc);
+            Method doc = Method.Unresolved(
+                IdentifierFor.Method(association.Method, association.TargetType),
+                type,
+                association.Method,
+                methodReturnType);
 
-				foreach (var parameter in association.Method.GetParameters()) {
-					var reference = DeclaredType.Unresolved(
-						Identifier.FromType(parameter.ParameterType),
-						parameter.ParameterType,
-						Namespace.Unresolved(Identifier.FromNamespace(parameter.ParameterType.Namespace)));
+            ParseSummary(association, doc);
+            ParseRemarks(association, doc);
+            ParseValue(association, doc);
+            ParseReturns(association, doc);
+            ParseExample(association, doc);
 
-					var docParam = new MethodParameter(parameter.Name, parameter.IsOptional, parameter.DefaultValue, reference);
+            foreach (ParameterInfo parameter in association.Method.GetParameters())
+            {
+                DeclaredType reference = DeclaredType.Unresolved(
+                    IdentifierFor.Type(parameter.ParameterType),
+                    parameter.ParameterType,
+                    Namespace.Unresolved(IdentifierFor.Namespace(parameter.ParameterType.Namespace)));
+                var docParam = new MethodParameter(parameter.Name, parameter.IsOptional, parameter.DefaultValue, reference);
 
-					ParseParamSummary(association, docParam);
 
-					doc.AddParameter(docParam);
-				}
+                ParseParamSummary(association, docParam);
 
-				if (matchedAssociations.ContainsKey(association.Name))
-					return; // weird case when a type has the same method declared twice
+                doc.AddParameter(docParam);
+            }
 
-				matchedAssociations.Add(association.Name, doc);
-				if (type == null) return;
-				type.AddMethod(doc);
-			} catch (IOException ex) {
-                if (type == null) return;
-				var doc = Method.Unresolved(
-					Identifier.FromMethod(association.Method, association.TargetType),
-					type, association.Method, new NullReference());
-				type.AddMethod(doc);
-			}
+            if (_matchedAssociations.ContainsKey(association.Name))
+            {
+                return; // weird case when a type has the same method declared twice
+            }
+
+            _matchedAssociations.Add(association.Name, doc);
+
+            if (type == null)
+            {
+                return;
+            }
+
+            type.AddMethod(doc);
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Docu.Parsing.Comments
             return node.Name == "see";
         }
 
-        public IComment Parse(ICommentParser parser, XmlNode node, bool first, bool last, ParseOptions options)
+        public Comment Parse(ICommentParser parser, XmlNode node, bool first, bool last, ParseOptions options)
         {
             IReferencable reference = new NullReference();
             if (node.Attributes["cref"] == null) return new See(reference);
-            var referenceTarget = Identifier.FromString(node.Attributes["cref"].Value);
+            var referenceTarget = IdentifierFor.XmlString(node.Attributes["cref"].Value);
 
             if (referenceTarget is NamespaceIdentifier)
                 reference = Namespace.Unresolved((NamespaceIdentifier)referenceTarget);

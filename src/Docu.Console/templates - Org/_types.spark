@@ -1,4 +1,4 @@
-﻿<nav id="types">
+﻿<div id="types">
 	<h2 class="fixed">All Types</h2>
 	<div class="scroll">
 		<ul>
@@ -7,4 +7,4 @@
 			</for>
 		</ul>
 	</div>
-</nav>
+</div>

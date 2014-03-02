@@ -21,9 +21,9 @@ namespace Docu.Output.Rendering
     /// </summary>
     public abstract class SparkTemplateBase : AbstractSparkView, IDocuTemplate
     {
-        protected readonly IOutputFormatter Formatter;
+        protected readonly HtmlOutputFormatter Formatter;
 
-        public SparkTemplateBase()
+        protected SparkTemplateBase()
         {
             Formatter = new HtmlOutputFormatter(this);
         }
@@ -250,7 +250,7 @@ namespace Docu.Output.Rendering
         /// </summary>
         /// <param name="comment"></param>
         /// <returns></returns>
-        public string Format(IComment comment)
+        public string Format(Comment comment)
         {
             return Formatter.Format(comment);
         }
@@ -259,7 +259,6 @@ namespace Docu.Output.Rendering
         /// Returns a hyperlink to another symbol
         /// </summary>
         /// <remarks>The format of the URL in the returned hyperlink can be controlled by the methods <see cref="SetNamespaceUrlFormat"/>, <see cref="SetTypeUrlFormat"/>,  <see cref="SetPropertyUrlFormat"/>, <see cref="SetMethodUrlFormat"/>, <see cref="SetFieldUrlFormat"/> and <see cref="SetEventUrlFormat"/></remarks>
-        /// <param name="referencable"></param>
         /// <returns></returns>
         public string Format(IReferencable referencable, params Expression<Func<object, string>>[] attributes)
         {
@@ -301,15 +300,16 @@ namespace Docu.Output.Rendering
         /// Returns a comma-delimited list of the parameters of a given method
         /// </summary>
         /// <param name="method"></param>
+        /// <param name="format"></param>
         /// <returns></returns>
-        public string OutputMethodParams(Method method)
+        public string OutputMethodParams(Method method, bool format = true)
         {
             var sb = new StringBuilder();
             var markExtensionMethodInstance = method.IsExtension;
 
             foreach (MethodParameter parameter in method.Parameters)
             {
-                sb.Append("\t");
+                if(format) sb.Append("\t");
                 if (markExtensionMethodInstance)
                 {
                     sb.Append("this ");
@@ -318,7 +318,7 @@ namespace Docu.Output.Rendering
                 sb.Append(Format(parameter.Reference));
                 sb.Append(" ");
                 sb.Append(parameter.PrettyName);
-                sb.Append(",\n");
+                sb.Append(format ? ",\n" : ", ");
             }
 
             if (sb.Length > 0)

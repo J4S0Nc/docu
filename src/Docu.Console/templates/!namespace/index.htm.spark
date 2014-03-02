@@ -6,45 +6,40 @@
 	<![endif]-->
 
     <title>${Namespace.Name} - ${WriteProductName(Assemblies[0])} Documentation</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link type="text/css" rel="stylesheet" href="../main.css" />
     <script type="text/javascript" src="../js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="../js/jquery.scrollTo-min.js"></script>
     <script type="text/javascript" src="../js/navigation.js"></script>
   </head>
   <body>
-  	<header><h1>${WriteProductName(Assemblies[0])} : API Documentation</h1>
+  	<header><h1>${WriteProductName(Assemblies[0])} : Documentation</h1>
 	</header>
 	<namespaces />
     <types />
 	<article>
+	<section>
     <header>
 		<p class="class"><strong>Namespace</strong> ${Namespace.Name}</p>
 	</header>
-	<section>
+	
     <div class="sub-header">
 	<if condition="Namespace.HasInterfaces">
 			<h3 class="section">Interfaces</h3>
-			<ul>
-				<for each="var type in Namespace.Interfaces">
-					<li>${Format(type)}</li>
-				</for>
+			<ul>				
+				<li each="var type in Namespace.Interfaces">${Format(type)} ${Format(type.Summary)}</li>
 			</ul>
 		</if>
 		<if condition="Namespace.HasClasses">
 			<h3 class="section">Classes</h3>
 			<ul>
-				<for each="var type in Namespace.Classes">
-					<li>${Format(type)}</li>
-				</for>
+				<li each="var type in Namespace.Classes">${Format(type)} ${Format(type.Summary)}</li>				
 			</ul>
 		</if>
 		<if condition="Namespace.HasEnums">
 			<h3 class="section">Enums</h3>
 			<ul>
-				<for each="var type in Namespace.Enums">
-					<li>${Format(type)}</li>
-				</for>
+				<li each="var type in Namespace.Enums">${Format(type)} ${Format(type.Summary)}</li>				
 			</ul>
 		</if>
 		

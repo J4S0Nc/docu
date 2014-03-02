@@ -1,4 +1,5 @@
-using Docu.Documentation;
+using Docu.Events;
+using Docu.Parsing;
 using Docu.Parsing.Model;
 using Example;
 using NUnit.Framework;
@@ -11,17 +12,16 @@ namespace Docu.Tests.Documentation.DocumentModelGeneratorTests
         [Test]
         public void ShouldHaveEventsInTypes()
         {
-            var model = new DocumentModel(StubParser, StubEventAggregator);
+            var model = new DocumentationModelBuilder(StubParser, new EventAggregator());
             var members = new IDocumentationMember[]
-            {
-                Type<Second>(@"<member name=""T:Example.Second"" />"),  
-                Event<Second>(@"<member name=""E:Example.Second.AnEvent"" />", "AnEvent"),
-            };
-            var namespaces = model.Create(members);
-            var ev = typeof(Second).GetEvent("AnEvent");
+                {
+                    Type<Second>(@"<member name=""T:Example.Second"" />"),
+                    Event<Second>(@"<member name=""E:Example.Second.AnEvent"" />", "AnEvent"),
+                };
+            var namespaces = model.CombineToTypeHierarchy(members);
+            var ev = typeof (Second).GetEvent("AnEvent");
 
-            namespaces[0].Types[0].Events
-                .ShouldContain(x => x.IsIdentifiedBy(Identifier.FromEvent(ev, typeof(Second))));
+            namespaces[0].Types[0].Events.ShouldContain(x => x.IsIdentifiedBy(IdentifierFor.Event(ev, typeof(Second))));
         }
     }
 }

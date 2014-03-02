@@ -2,18 +2,22 @@
   <h3 class="section">${title}</h3>
   
   <div id="${method.Name}" class="method" each="var method in methods">
-    <var hasParams="method.Parameters.Any(x => x.HasDocumentation)" />
-    <h4>${h(method.PrettyName)}</h4>
+    <var hasParams="method.Parameters.Any()" />
+    <h4> ${Format(method.ReturnType)} ${h(method.PrettyName)}</h4>
     <comment content="method.Summary" />
-    <div class="syntax">
-      <h5>Syntax</h5>
+    <blockquote class="syntax">      
       ${Format(method.ReturnType)} ${h(method.PrettyName)}(<pre if="hasParams">${OutputMethodParams(method)}</pre>)
-    </div>
+    </blockquote>
     <div class="content">
 
       <remarks content="method.Remarks" />
+      <if condition="method.IsObsolete">
+        <div id="warning">
+          <b>Obsolete:</b> ${method.ObsoleteReason}
+        </div>
+      </if>
 
-      <var hasReturn="method.ReturnType.PrettyName != 'void'" />
+      <var hasReturn="method.ReturnType != null && method.ReturnType.PrettyName != 'void'" />
      
 
       <div class="parameters" if="hasParams">
@@ -45,6 +49,6 @@
       <value content="method.Value" />
       <example content="method.Example" />
     </div>
-    <hr />
+   
   </div>
 </if>

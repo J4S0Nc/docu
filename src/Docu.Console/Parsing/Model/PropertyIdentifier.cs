@@ -4,12 +4,11 @@ namespace Docu.Parsing.Model
 {
     public sealed class PropertyIdentifier : Identifier, IEquatable<PropertyIdentifier>, IComparable<PropertyIdentifier>
     {
-        private readonly TypeIdentifier typeId;
-
-        public PropertyIdentifier(string name, bool hasGet, bool hasSet,bool isStatic, TypeIdentifier typeId)
+        private readonly TypeIdentifier _typeId;
+        public PropertyIdentifier(string name, bool hasGet, bool hasSet, bool isStatic, TypeIdentifier typeId)
             : base(name)
         {
-            this.typeId = typeId;
+            _typeId = typeId;
             HasGet = hasGet;
             HasSet = hasSet;
             IsStatic = isStatic;
@@ -20,12 +19,12 @@ namespace Docu.Parsing.Model
 
         public override NamespaceIdentifier CloneAsNamespace()
         {
-            return typeId.CloneAsNamespace();
+            return _typeId.CloneAsNamespace();
         }
 
         public override TypeIdentifier CloneAsType()
         {
-            return typeId.CloneAsType();
+            return _typeId.CloneAsType();
         }
 
         public override bool Equals(Identifier obj)
@@ -37,12 +36,12 @@ namespace Docu.Parsing.Model
         public bool Equals(PropertyIdentifier other)
         {
             // no need for expensive GetType calls since the class is sealed.
-            if(((object)other) == null)
+            if (((object)other) == null)
             {
                 return false;
             }
 
-            return (Name == other.Name) && typeId.Equals(other.typeId);
+            return (Name == other.Name) && _typeId.Equals(other._typeId);
         }
 
         public override int CompareTo(Identifier other)
@@ -52,18 +51,18 @@ namespace Docu.Parsing.Model
 
         public int CompareTo(PropertyIdentifier other)
         {
-            if(((object)other) == null)
+            if (((object)other) == null)
             {
                 return -1;
             }
 
             int comparison = Name.CompareTo(other.Name);
-            if(comparison != 0)
+            if (comparison != 0)
             {
                 return comparison;
             }
 
-            return typeId.CompareTo(other.typeId);
+            return _typeId.CompareTo(other._typeId);
         }
     }
 }

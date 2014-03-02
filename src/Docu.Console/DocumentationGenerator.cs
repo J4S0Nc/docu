@@ -1,35 +1,31 @@
+using Docu.Events;
+using Docu.IO;
+using Docu.Output;
+using Docu.Parsing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Docu.Events;
-using Docu.Output;
-using Docu.IO;
-using Docu.Parsing;
+using Docu.Parsing.Comments;
 
 namespace Docu
 {
-    public class DocumentationGenerator : IDocumentationGenerator
+    public class DocumentationGenerator
     {
-        private readonly List<Assembly> assemblies = new List<Assembly>();
-        private readonly IAssemblyLoader assemblyLoader;
-        private readonly IAssemblyXmlParser parser;
-        private readonly IUntransformableResourceManager resourceManager;
-        private readonly IEventAggregator eventAggregator;
-        private readonly IBulkPageWriter writer;
-        private readonly IXmlLoader xmlLoader;
-        private readonly List<string> contentsOfXmlFiles = new List<string>();
-        private string outputPath = "output";
-        private string templatePath = Path.Combine(Path.GetDirectoryName(typeof(DocumentationGenerator).Assembly.Location), "templates");
+        readonly string _outputPath;
+        readonly string _templatePath;
 
-        public DocumentationGenerator(IAssemblyLoader assemblyLoader, IXmlLoader xmlLoader, IAssemblyXmlParser parser, IBulkPageWriter writer, IUntransformableResourceManager resourceManager, IEventAggregator eventAggregator)
+        readonly ICommentParser _commentParser;
+        readonly EventAggregator _eventAggregator;
+        readonly List<Assembly> _assemblies = new List<Assembly>();
+        readonly List<string> _contentsOfXmlFiles = new List<string>();
+
+        public DocumentationGenerator(string outputPath, string templatePath, ICommentParser commentParser, EventAggregator eventAggregator)
         {
-            this.assemblyLoader = assemblyLoader;
-            this.xmlLoader = xmlLoader;
-            this.parser = parser;
-            this.writer = writer;
-            this.resourceManager = resourceManager;
-            this.eventAggregator = eventAggregator;
+            _outputPath = outputPath;
+            _templatePath = templatePath;
+            _commentParser = commentParser;
+            _eventAggregator = eventAggregator;
         }
 
         public void SetAssemblies(IEnumerable<string> assemblyPaths)
@@ -38,60 +34,36 @@ namespace Docu
             {
                 try
                 {
-                    assemblies.Add(assemblyLoader.LoadFrom(assemblyPath));
+                    _assemblies.Add(Assembly.LoadFrom(assemblyPath));
                 }
-                catch(BadImageFormatException)
+                catch (BadImageFormatException)
                 {
-                    RaiseBadFileEvent(assemblyPath);
+                    _eventAggregator.Publish(EventType.BadFile, assemblyPath);
                 }
             }
-        }
-
-        private void RaiseBadFileEvent(string path)
-        {
-            eventAggregator
-                .GetEvent<BadFileEvent>()
-                .Publish(path);
-        }
-
-        public void SetAssemblies(IEnumerable<Assembly> assembliesToParse)
-        {
-            assemblies.AddRange(assembliesToParse);
         }
 
         public void SetXmlFiles(IEnumerable<string> xmlFiles)
         {
             foreach (string xmlFile in xmlFiles)
             {
-                contentsOfXmlFiles.Add(xmlLoader.LoadFrom(xmlFile));
+                _contentsOfXmlFiles.Add(File.ReadAllText(xmlFile));
             }
-        }
-
-        public void SetXmlContent(IEnumerable<string> xmlContents)
-        {
-            contentsOfXmlFiles.AddRange(xmlContents);
-        }
-
-        public void SetTemplatePath(string templateDirectory)
-        {
-            templatePath = templateDirectory;
-        }
-
-        public void SetOutputPath(string outputDirectory)
-        {
-            outputPath = outputDirectory;
         }
 
         public void Generate()
         {
-            var documentModel = parser.CreateDocumentModel(assemblies, contentsOfXmlFiles);
+            if (_assemblies.Count <= 0) return;
 
-            writer.SetAssemblies(assemblies);
-            
-            if (assemblies.Count <= 0) return;
-            
-            writer.CreatePagesFromDirectory(templatePath, outputPath, documentModel);
-            resourceManager.MoveResources(templatePath, outputPath);
+            var parser = new DocumentationModelBuilder(_commentParser, _eventAggregator);
+            var namespaces = parser.CreateDocumentModel(_assemblies, _contentsOfXmlFiles);
+
+            var writer = new BulkPageWriter(new PageWriter(new HtmlGenerator(), new FileSystemOutputWriter(), new PatternTemplateResolver()));
+            writer.SetAssemblies(_assemblies);
+            writer.CreatePagesFromDirectory(_templatePath, _outputPath, namespaces);
+
+            var resourceManager = new UntransformableResourceManager();
+            resourceManager.MoveResources(_templatePath, _outputPath);
         }
     }
 }

@@ -6,21 +6,11 @@ namespace Docu.Documentation
 {
     public class Namespace : BaseDocumentationElement, IReferencable
     {
-        private readonly List<DeclaredType> types = new List<DeclaredType>();
+        readonly List<DeclaredType> types = new List<DeclaredType>();
 
         public Namespace(Identifier identifier)
             : base(identifier)
         {
-        }
-
-        public IList<DeclaredType> Types
-        {
-            get { return types; }
-        }
-
-        public bool HasTypes
-        {
-            get { return Types.Count > 0; }
         }
 
         public IEnumerable<DeclaredType> Classes
@@ -33,14 +23,24 @@ namespace Docu.Documentation
             get { return Classes.Any(); }
         }
 
+        public bool HasInterfaces
+        {
+            get { return Interfaces.Any(); }
+        }
+
+        public bool HasTypes
+        {
+            get { return Types.Count > 0; }
+        }
+
         public IEnumerable<DeclaredType> Interfaces
         {
             get { return Types.Where(x => x.IsInterface); }
         }
 
-        public bool HasInterfaces
+        public IList<DeclaredType> Types
         {
-            get { return Interfaces.Any(); }
+            get { return types; }
         }
 
         public IEnumerable<DeclaredType> Enums
@@ -52,6 +52,7 @@ namespace Docu.Documentation
         {
             get { return Enums.Any(); }
         }
+
         public string FullName
         {
             get { return Name; }
@@ -68,14 +69,28 @@ namespace Docu.Documentation
             {
                 IsResolved = true;
 
-                foreach (var type in Types)
+                foreach (DeclaredType type in Types)
                 {
                     if (!type.IsResolved)
+                    {
                         type.Resolve(referencables);
+                    }
                 }
             }
             else
+            {
                 ConvertToExternalReference();
+            }
+        }
+
+        public static Namespace Unresolved(NamespaceIdentifier namespaceIdentifier)
+        {
+            return new Namespace(namespaceIdentifier) {IsResolved = false};
+        }
+
+        public void AddType(DeclaredType type)
+        {
+            types.Add(type);
         }
 
         public void Sort()
@@ -88,19 +103,9 @@ namespace Docu.Documentation
             }
         }
 
-        public void AddType(DeclaredType type)
-        {
-            types.Add(type);
-        }
-
         public override string ToString()
         {
             return base.ToString() + " { Name = '" + Name + "' }";
-        }
-
-        public static Namespace Unresolved(NamespaceIdentifier namespaceIdentifier)
-        {
-            return new Namespace(namespaceIdentifier) { IsResolved = false };
         }
     }
 }

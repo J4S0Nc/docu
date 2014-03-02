@@ -4,33 +4,37 @@ using Docu.Parsing.Model;
 
 namespace Docu.Documentation.Generators
 {
-    internal class FieldGenerator : BaseGenerator
+    internal class FieldGenerator : BaseGenerator, IGenerator<DocumentedField>
     {
-        private readonly IDictionary<Identifier, IReferencable> matchedAssociations;
+        readonly IDictionary<Identifier, IReferencable> _matchedAssociations;
 
-        public FieldGenerator(IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser) : base(commentParser)
+        public FieldGenerator(IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser)
+            : base(commentParser)
         {
-            this.matchedAssociations = matchedAssociations;
+            _matchedAssociations = matchedAssociations;
         }
 
         public void Add(List<Namespace> namespaces, DocumentedField association)
         {
-            if (association.Field == null) return;
+            if (association.Field == null )
+            { 
+                return;
+            }
+            
+            DeclaredType type = FindType(association, namespaces);
 
-            var ns = FindNamespace(association, namespaces);
-            var type = FindType(ns, association);
-
-            var returnType = DeclaredType.Unresolved(Identifier.FromType(association.Field.FieldType),
-                                                     association.Field.FieldType,
-                                                     Namespace.Unresolved(
-                                                         Identifier.FromNamespace(association.Field.FieldType.Namespace)));
-            var doc = Field.Unresolved(Identifier.FromField(association.Field, association.TargetType), type, returnType);
+            DeclaredType returnType = DeclaredType.Unresolved(
+                IdentifierFor.Type(association.Field.FieldType),
+                association.Field.FieldType,
+                Namespace.Unresolved(IdentifierFor.Namespace(association.Field.FieldType.Namespace)));
+            Field doc = Field.Unresolved(
+                IdentifierFor.Field(association.Field, association.TargetType), type, returnType);
 
             ParseSummary(association, doc);
             ParseRemarks(association, doc);
             ParseExample(association, doc);
-			
-            matchedAssociations[association.Name] = doc;
+
+            _matchedAssociations[association.Name] = doc;
             type.AddField(doc);
         }
     }

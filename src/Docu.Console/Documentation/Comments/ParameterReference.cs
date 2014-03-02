@@ -1,6 +1,6 @@
 namespace Docu.Documentation.Comments
 {
-    public class ParameterReference : BaseComment
+    public class ParameterReference : Comment
     {
         public ParameterReference(string parameter)
         {

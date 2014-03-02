@@ -14,13 +14,11 @@ namespace Docu.Tests.Parsing
     [TestFixture]
     public class DocumentationXmlMatcherPrePopulationTests : BaseFixture
     {
-        private DocumentationXmlMatcher matcher;
         private IList<IDocumentationMember> members;
 
         [SetUp]
         public void CreateAssociator()
         {
-            matcher = new DocumentationXmlMatcher();
         }
 
         [Test]
@@ -29,7 +27,7 @@ namespace Docu.Tests.Parsing
             document_member<EmptyType>();
 
             var member = find_member<EmptyType>();
-            member.ShouldBeOfType<UndocumentedType>();
+            member.ShouldBeOfType<ReflectedType>();
             member.Name.ToString().ShouldEqual("EmptyType");
         }
 
@@ -39,7 +37,7 @@ namespace Docu.Tests.Parsing
             document_member<SingleMethodType>();
 
             var member = find_member<SingleMethodType>(x => x.Method());
-            member.ShouldBeOfType<UndocumentedMethod>();
+            member.ShouldBeOfType<ReflectedMethod>();
             member.Name.ToString().ShouldEqual("Method");
         }
 
@@ -49,11 +47,11 @@ namespace Docu.Tests.Parsing
             document_member<ClassWithOverload>();
 
             var member = find_member<ClassWithOverload>(x => x.Method());
-            member.ShouldBeOfType<UndocumentedMethod>();
+            member.ShouldBeOfType<ReflectedMethod>();
             member.Name.ToString().ShouldEqual("Method");
 
             var member2 = find_member<ClassWithOverload>(x => x.Method(null));
-            member2.ShouldBeOfType<UndocumentedMethod>();
+            member2.ShouldBeOfType<ReflectedMethod>();
             member2.Name.ToString().ShouldEqual("Method");
             member2.ShouldNotEqual(member);
         }
@@ -67,12 +65,13 @@ namespace Docu.Tests.Parsing
                 .ShouldBeNull();
         }
 
+        [Test, Ignore]
         public void ShouldAddExplicitlyImplementedClassMethods()
         {
             document_member<ClassWithExplicitMethodImplementation>();
             var member = find_member<ClassWithExplicitMethodImplementation>("Method");
 
-            member.ShouldBeOfType<UndocumentedMethod>();
+            member.ShouldBeOfType<ReflectedMethod>();
             member.Name.ToString().ShouldEqual("Method");
         }
 
@@ -82,7 +81,7 @@ namespace Docu.Tests.Parsing
             document_member<EmptyInterface>();
             var member = find_member<EmptyInterface>();
 
-            member.ShouldBeOfType<UndocumentedType>();
+            member.ShouldBeOfType<ReflectedType>();
             member.Name.ToString().ShouldEqual("EmptyInterface");
         }
 
@@ -92,7 +91,7 @@ namespace Docu.Tests.Parsing
             document_member<SingleMethodInterface>();
             var member = find_member<SingleMethodInterface>(x => x.Method());
 
-            member.ShouldBeOfType<UndocumentedMethod>();
+            member.ShouldBeOfType<ReflectedMethod>();
             member.Name.ToString().ShouldEqual("Method");
         }
 
@@ -102,17 +101,17 @@ namespace Docu.Tests.Parsing
             document_member<StaticMethodClass>();
             var member = find_member<StaticMethodClass>(() => StaticMethodClass.Method());
 
-            member.ShouldBeOfType<UndocumentedMethod>();
+            member.ShouldBeOfType<ReflectedMethod>();
             member.Name.ToString().ShouldEqual("Method");
         }
 
         [Test]
         public void should_add_events()
         {
-            document_member<EventType>();
+            document_member<EventTypeEx>();
 
-            var member = find_event<EventType>("AnEvent");
-            member.ShouldBeOfType<UndocumentedEvent>();
+            var member = find_event<EventTypeEx>("AnEvent");
+            member.ShouldBeOfType<ReflectedEvent>();
             member.Name.ToString().ShouldEqual("AnEvent");
         }
 
@@ -122,30 +121,30 @@ namespace Docu.Tests.Parsing
             document_member<FieldType>();
 
             var member = find_member<FieldType>(x => x.aField);
-            member.ShouldBeOfType<UndocumentedField>();
+            member.ShouldBeOfType<ReflectedField>();
             member.Name.ToString().ShouldEqual("aField");
         }
 
         private void document_member<T>()
         {
-            members = matcher.DocumentMembers(DocMembers(typeof(T)), new XmlNode[0]);
+            members = DocumentationXmlMatcher.MatchDocumentationToMembers(DocumentableMemberFinder.ReflectMembersForDocumenting(new[] {typeof(T)}), new XmlNode[0]);
         }
 
         private IDocumentationMember find_member<T>()
         {
-            return members.FirstOrDefault(x => x.Name == Identifier.FromType(typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Type(typeof(T)));
         }
 
         private IDocumentationMember find_event<T>(string name)
         {
-            return members.FirstOrDefault(x => x.Name == Identifier.FromEvent(typeof(T).GetEvent(name), typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Event(typeof(T).GetEvent(name), typeof(T)));
         }
 
         private IDocumentationMember find_member<T>(Expression<Action<T>> methodAction)
         {
             var method = ((MethodCallExpression)methodAction.Body).Method;
 
-            return members.FirstOrDefault(x => x.Name == Identifier.FromMethod(method, typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Method(method, typeof(T)));
         }
 
         private IDocumentationMember find_member<T>(Expression<Func<T, object>> propertyOrField)
@@ -153,23 +152,23 @@ namespace Docu.Tests.Parsing
             var member = ((MemberExpression)propertyOrField.Body).Member;
 
             if (member is PropertyInfo)
-                return members.FirstOrDefault(x => x.Name == Identifier.FromProperty((PropertyInfo)member, typeof(T)));
+                return members.FirstOrDefault(x => x.Name == IdentifierFor.Property((PropertyInfo)member, typeof(T)));
 
-            return members.FirstOrDefault(x => x.Name == Identifier.FromField((FieldInfo)member, typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Field((FieldInfo)member, typeof(T)));
         }
 
         private IDocumentationMember find_member<T>(Expression<Action> methodAction)
         {
             var method = ((MethodCallExpression)methodAction.Body).Method;
 
-            return members.FirstOrDefault(x => x.Name == Identifier.FromMethod(method, typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Method(method, typeof(T)));
         }
 
         private IDocumentationMember find_member<T>(string methodName)
         {
             var method = typeof(T).GetMethod(methodName);
 
-            return members.FirstOrDefault(x => x.Name == Identifier.FromMethod(method, typeof(T)));
+            return members.FirstOrDefault(x => x.Name == IdentifierFor.Method(method, typeof(T)));
         }
     }
 }

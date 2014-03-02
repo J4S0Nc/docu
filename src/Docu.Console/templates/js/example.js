@@ -5,8 +5,8 @@
 
         a.pre = pre;
         a.preVisible = true;
-       
-        a.click(function() {
+
+        a.click(function () {
             if (a.preVisible) {
                 a.pre.hide();
                 a.text('Show Example');

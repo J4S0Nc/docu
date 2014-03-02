@@ -1,12 +1,24 @@
-﻿<if condition="enums.Count() > 0">
-  <h3 class="section">${title}</h3>
+﻿
+<if condition="type.Enums.Count() > 0">
 
-  <div id="${e.Name}" class="method" each="var e in enums">
-    <h4><strong>${h(e.Name)}</strong></h4>
+  <div id="${type.Name}" class="method">
+    <h4>
+      <span title="System.enum">enum</span> <strong>${type.Name}</strong> 
+    </h4>
     <div class="content">
-      <comment content="e.Summary" />
-      <remarks content="e.Remarks" />      
-      <example content="e.Example" />
+      <div id="${e.Name}" class="enum"  each="var e in type.Enums">
+        <div class="content" if="e.HasDocumentation">
+          <comment content="e.Summary" />
+          <remarks content="e.Remarks" />
+          <example content="e.Example" />
+        </div>
+        <span class="value">${h(e.EnumValue)}</span>
+        <strong>${h(e.Name)}</strong>
+
+      </div>
+
     </div>
   </div>
+
+  
 </if>

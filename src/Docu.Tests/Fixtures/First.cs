@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
+// ReSharper disable EventNeverInvoked
+// ReSharper disable InconsistentNaming
 namespace Example
 {
     public class EmptyType
@@ -79,7 +81,7 @@ namespace Example
         {}
     }
 
-    public class EventType
+    public class EventTypeEx
     {
         public event EventHandler<EventArgs> AnEvent;
     }
@@ -152,3 +154,5 @@ namespace Example
         }
     }
 }
+// ReSharper restore InconsistentNaming
+// ReSharper restore EventNeverInvoked

@@ -1,44 +1,56 @@
 using System.Collections.Generic;
-using Docu.Documentation.Generators;
 using Docu.Parsing.Comments;
 using Docu.Parsing.Model;
 
-namespace Docu.Documentation
+namespace Docu.Documentation.Generators
 {
-    internal class PropertyGenerator : BaseGenerator
+    internal class PropertyGenerator : BaseGenerator, IGenerator<DocumentedProperty>
     {
-        private readonly IDictionary<Identifier, IReferencable> matchedAssociations;
+        readonly IDictionary<Identifier, IReferencable> _matchedAssociations;
 
-        public PropertyGenerator(IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser)
+        public PropertyGenerator(
+            IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser)
             : base(commentParser)
         {
-            this.matchedAssociations = matchedAssociations;
+            _matchedAssociations = matchedAssociations;
         }
 
         public void Add(List<Namespace> namespaces, DocumentedProperty association)
         {
-            if (association.Property == null) return;
+            if (association.Property == null)
+            {
+                return;
+            }
 
-            var ns = FindNamespace(association, namespaces);
-            var type = FindType(ns, association);
+            DeclaredType type = FindType(association, namespaces);
             var isStatic = association.Property.GetGetMethod().IsStatic;
-            var propertyReturnType =
-                DeclaredType.Unresolved(Identifier.FromType(association.Property.PropertyType),
-                                        association.Property.PropertyType,
-                                        Namespace.Unresolved(
-                                            Identifier.FromNamespace(association.Property.PropertyType.Namespace)));
-            var doc = Property.Unresolved(Identifier.FromProperty(association.Property, association.TargetType, isStatic), type, propertyReturnType);
-            
+            DeclaredType propertyReturnType =
+                DeclaredType.Unresolved(
+                    IdentifierFor.Type(association.Property.PropertyType),
+                    association.Property.PropertyType,
+                    Namespace.Unresolved(IdentifierFor.Namespace(association.Property.PropertyType.Namespace)));
+            Property doc = Property.Unresolved(
+                IdentifierFor.Property(association.Property, association.TargetType, isStatic),
+                type,
+                association.Property,
+                propertyReturnType);
+
             ParseSummary(association, doc);
             ParseValue(association, doc);
             ParseRemarks(association, doc);
             ParseExample(association, doc);
 
-            if (matchedAssociations.ContainsKey(association.Name))
+            if (_matchedAssociations.ContainsKey(association.Name))
+            {
                 return;
+            }
 
-            matchedAssociations.Add(association.Name, doc);
-            if (type == null) return;
+            _matchedAssociations.Add(association.Name, doc);
+            if (type == null)
+            {
+                return;
+            }
+
             type.AddProperty(doc);
         }
     }

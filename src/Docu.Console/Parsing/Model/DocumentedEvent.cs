@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
 namespace Docu.Parsing.Model
 {
+    [DebuggerDisplay("Event {Name.Name,nq} for {TargetType.FullName,nq}")]
     public class DocumentedEvent : IDocumentationMember
     {
         public DocumentedEvent(Identifier name, XmlNode xml, EventInfo ev, Type targetType)
@@ -14,15 +16,10 @@ namespace Docu.Parsing.Model
             TargetType = targetType;
         }
 
-        public Type TargetType { get; set; }
-        public EventInfo Event { get; set; }
+        public EventInfo Event { get; private set; }
 
-        public XmlNode Xml { get; set; }
-        public Identifier Name { get; set; }
-
-        public bool Match(Identifier name)
-        {
-            return Name.Equals(name);
-        }
+        public Identifier Name { get; private set; }
+        public Type TargetType { get; private set; }
+        public XmlNode Xml { get; private set; }
     }
 }

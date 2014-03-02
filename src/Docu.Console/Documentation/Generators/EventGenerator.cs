@@ -4,30 +4,32 @@ using Docu.Parsing.Model;
 
 namespace Docu.Documentation.Generators
 {
-    internal class EventGenerator : BaseGenerator
+    internal class EventGenerator : BaseGenerator, IGenerator<DocumentedEvent>
     {
-        private readonly IDictionary<Identifier, IReferencable> matchedAssociations;
+        readonly IDictionary<Identifier, IReferencable> _matchedAssociations;
 
         public EventGenerator(IDictionary<Identifier, IReferencable> matchedAssociations, ICommentParser commentParser)
             : base(commentParser)
         {
-            this.matchedAssociations = matchedAssociations;
+            _matchedAssociations = matchedAssociations;
         }
 
         public void Add(List<Namespace> namespaces, DocumentedEvent association)
         {
-            if (association.Event == null) return;
+            if (association.Event == null)
+            {
+                return;
+            }
 
-            var ns = FindNamespace(association, namespaces);
-            var type = FindType(ns, association);
+            DeclaredType type = FindType(association, namespaces);
 
-            var doc = Event.Unresolved(Identifier.FromEvent(association.Event, association.TargetType), type);
+            Event doc = Event.Unresolved(IdentifierFor.Event(association.Event, association.TargetType), type);
 
             ParseSummary(association, doc);
             ParseRemarks(association, doc);
             ParseExample(association, doc);
 
-            matchedAssociations.Add(association.Name, doc);
+            _matchedAssociations.Add(association.Name, doc);
             type.AddEvent(doc);
         }
     }

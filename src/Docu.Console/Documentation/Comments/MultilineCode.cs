@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace Docu.Documentation.Comments
+﻿namespace Docu.Documentation.Comments
 {
-    public class MultilineCode : BaseComment
+    using System.Collections.Generic;
+
+    public class MultilineCode : Comment
     {
         public MultilineCode()
-        {}
+        {
+        }
 
-        public MultilineCode(IEnumerable<IComment> comments)
+        public MultilineCode(IEnumerable<Comment> comments)
         {
             comments.ForEach(AddChild);
         }

@@ -74,11 +74,7 @@ a, a:active, a:visited { color: #607890; }
 a:hover { color: #036; }
 
 
-/**
- * Primary styles
- *
- * Author: Dylan Beattie (dylan@dylanbeattie.net)
- */
+
  
 body > header {
 	position: absolute;
@@ -157,22 +153,9 @@ footer {
 	font-size: 80%;
 }
 
-header {
-	background-color: #cccccc;
-}
-header p {
-	padding: 4px;
-}
-
-nav h2, header p.class {
-	background-color: #333333;
-	padding: 4px;
-	color: #fff;
-}
-
 article section {
 	position: absolute;
-	top: 24px;
+	top: 0px;
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
@@ -182,11 +165,8 @@ article section {
 section ul li {
 	margin: 4px 0px;
 }
-article section header p { margin: 0px; }
-article section h3, article section p {
-	padding: 4px;
-	margin: 4px 0px;
-}
+
+
 article section h3 {
 	font-size: 120%;
 }
@@ -216,7 +196,7 @@ h5 {
 	margin: 8px 0px;
 }
 
-dl { clear: left; border-bottom:  #cccccc thin dashed;}
+dl { clear: left; }
 dl dt {	width: 280px; float: left; }
 dl dd { margin-left: 180px;  }
         
@@ -262,3 +242,206 @@ dl dd { margin-left: 180px;  }
   h2, h3{ page-break-after: avoid; }
 }
 
+
+
+header {
+	background: #048;
+	border-bottom: 3px solid #006;
+	margin: 0;
+	color: #FFF;
+	padding: 10px;
+	clear: left;
+	font-size: 13px;
+}
+
+header p {
+	margin: 2px 0px;
+    padding: 0;
+}
+
+
+
+header .class {    	
+	font-weight: bold;
+    font-size: 120%;
+}
+
+header strong {
+	font-size: 13px;
+	width: 100px;
+	float: left;
+}
+
+header a {
+	
+    background: none;
+	color: #fff;
+}
+
+header a:hover {
+	background: none;
+	color: #fff;
+}
+
+.sub-header {
+	margin: 0 20px 20px ;
+    border-bottom:  #EFEFEF ridge;
+
+}
+
+
+div.method {
+	background: #EFEFEF;
+	border: 1px dotted #CCC;
+	margin: 5px 10px 15px 10px;
+	padding: 0;
+}
+
+div.method h4 {
+	background: #CCC;
+	border-bottom: 1px solid #666;
+	color: #000;
+	padding: 2px 5px;
+	margin: 0 0 10px 0;
+	font-weight: normal;
+}
+
+div.method h4 a {
+	background: transparent;
+}
+
+div.method .content {
+	padding: 0 10px 5px 10px;
+}
+div.enum .value {
+    float: left;
+    width: 50px;
+}
+div.enum strong {
+    clear: left;
+}
+div.parameters, div.return {
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 10px 10px 20px 10px;
+	margin-top: 10px;
+}
+
+div.parameters h5, div.return h5 {
+	color: #666;
+	margin: -10px 0 0 -10px;
+	padding: 3px;
+	font-weight: normal;
+	font-size: 10px;
+	border-bottom: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	float: left;
+}
+
+div.parameters h6, div.return h6 {
+	clear: left;
+	font-size: 14px;
+	font-weight: normal;
+	margin: 0;
+	padding: 6px 0 3px 0;
+}
+
+div.parameters p, div.return p {
+	border-top: 1px solid #ccc;
+	margin: 0;
+	padding: 3px 3px 0 3px;
+}
+
+#summary {
+	/*background: #EFEFEF;
+	border: 1px dotted #999999;*/
+	margin: 5px 10px 15px 10px;
+	padding: 5px 10px;
+}
+
+
+#warning {
+    color: red ;
+    background: rgb(255, 218, 0);
+	border: 1px solid red;
+	margin: 20px 10px 20px 10px;
+	padding: 5px 10px;
+}
+
+h2.fixed {
+	background: #CCC;
+	color: #000;
+	border-top: 1px solid #999;
+	border-bottom: 1px solid #999;
+	margin: 0;
+	padding: 2px 10px;
+	font-size: 12px;
+	font-weight: bold;
+}
+h3.section {
+    	padding: 2px 10px;
+}
+
+a {
+	background: #eef;
+	color: #039;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFF;
+	background: #039;
+}
+#namespaces a, #types a {
+	background: none;
+	color: #039;
+	text-decoration: none;
+}
+#namespaces a.current, #types a.current {
+	background: #039;
+	color: #FFF;
+	text-decoration: none;
+}
+
+#footer {
+	text-align: center;
+	font-size: 10px;
+	color: #888;
+	clear: left;
+	padding-top: 10px;
+}
+
+blockquote {
+	margin: 10px;
+	padding: 6px;
+	background: #F5F5F5;
+	border-top: 3px solid #CCC;
+	border-bottom: 3px solid #CCC;
+}
+
+.value {
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	font-size: 90%;
+}
+
+.example {
+	margin: 10px 0;
+}
+
+.example pre {
+	background: #DDD;
+	color: #000;
+	font-size: 14px;
+	font-family: Monaco, Consolas, Courier New, Monospace;
+	padding: 4px 10px;
+	border: 3px solid #AAA;
+}
+
+code {
+	font-family: Monaco, Consolas, Courier New, Monospace;
+}
+
+.div .content:empty{
+display:none;
+}

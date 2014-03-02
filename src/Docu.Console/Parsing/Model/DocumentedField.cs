@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
 namespace Docu.Parsing.Model
 {
+    [DebuggerDisplay("Field {Name.Name,nq} for {TargetType.FullName,nq}")]
     public class DocumentedField : IDocumentationMember
     {
         public DocumentedField(Identifier name, XmlNode xml, FieldInfo field, Type targetType)
@@ -13,16 +15,11 @@ namespace Docu.Parsing.Model
             Name = name;
             TargetType = targetType;
         }
-
-        public Type TargetType { get; set; }
-        public FieldInfo Field { get; set; }
-
-        public XmlNode Xml { get; set; }
-        public Identifier Name { get; set; }
-
-        public bool Match(Identifier name)
-        {
-            return Name.Equals(name);
-        }
+        
+        public FieldInfo Field { get; private set; }
+        public object Value { get; set; }
+        public Identifier Name { get; private set; }
+        public Type TargetType { get; private set; }
+        public XmlNode Xml { get; private set; }
     }
 }

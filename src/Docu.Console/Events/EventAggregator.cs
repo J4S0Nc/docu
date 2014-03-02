@@ -1,44 +1,24 @@
-using System;
-using System.Collections.Generic;
-
 namespace Docu.Events
 {
-    public class EventAggregator : IEventAggregator
-    {
-        private readonly IDictionary<Func<Type, bool>, Action<object>> handlers = new Dictionary<Func<Type, bool>, Action<object>>();
+    using System;
+    using System.Collections.Generic;
 
-        private void Publish<TEvent>(object payload)
+    public class EventAggregator
+    {
+        readonly IDictionary<EventType, Action<string>> handlers = new Dictionary<EventType, Action<string>>();
+
+        public void Publish(EventType eventType, string payload)
         {
-            foreach (var handler in handlers)
+            Action<string> handler;
+            if (handlers.TryGetValue(eventType, out handler))
             {
-                if (handler.Key(typeof(TEvent)))
-                    handler.Value(payload);
+                handler(payload);
             }
         }
 
-        private void Subscribe<TEvent>(Action<object> handler)
+        public void Subscribe(EventType eventType, Action<string> handle)
         {
-            handlers.Add(CanHandle<TEvent>, handler);
-        }
-
-        private bool CanHandle<TEvent>(Type arg)
-        {
-            if (arg == typeof(TEvent)) return true;
-            if (arg.IsSubclassOf(typeof(TEvent))) return true;
-            if (typeof(TEvent).IsAssignableFrom(arg)) return true;
-
-            return false;
-        }
-
-        public TEvent GetEvent<TEvent>()
-            where TEvent : IEvent, new()
-        {
-            var ev = new TEvent();
-
-            ev.PublishedHandler(Publish<TEvent>);
-            ev.SubscribedHandler(Subscribe<TEvent>);
-
-            return ev;
+            handlers.Add(eventType, handle);
         }
     }
 }

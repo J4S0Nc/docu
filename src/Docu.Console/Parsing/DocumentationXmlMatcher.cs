@@ -1,113 +1,90 @@
+using Docu.Parsing.Model;
 using System.Collections.Generic;
 using System.Xml;
-using Docu.Parsing.Model;
 
 namespace Docu.Parsing
 {
-    public class DocumentationXmlMatcher : IDocumentationXmlMatcher
+    public static class DocumentationXmlMatcher
     {
-        public IList<IDocumentationMember> DocumentMembers(IEnumerable<IDocumentationMember> undocumentedMembers, IEnumerable<XmlNode> snippets)
+        public static List<IDocumentationMember> MatchDocumentationToMembers(IEnumerable<IDocumentationMember> reflectedMembers, IEnumerable<XmlNode> xmlDocumentationSnippets)
         {
-            var members = new List<IDocumentationMember>(undocumentedMembers);
+            var members = new List<IDocumentationMember>(reflectedMembers);
 
-            foreach (XmlNode node in snippets)
+            foreach (XmlNode node in xmlDocumentationSnippets)
             {
                 string name = node.Attributes["name"].Value;
 
                 if (name.StartsWith("T"))
-                    ParseType(members, node);
+                    MatchType(members, node);
                 else if (name.StartsWith("M"))
-                    ParseMethod(members, node);
+                    MatchMethod(members, node);
                 else if (name.StartsWith("P"))
-                    ParseProperty(members, node);
+                    MatchProperty(members, node);
                 else if (name.StartsWith("E"))
-                    ParseEvent(members, node);
+                    MatchEvent(members, node);
                 else if (name.StartsWith("F"))
-                    ParseField(members, node);
+                    MatchField(members, node);
             }
 
             return members;
         }
 
-        private string GetMethodName(string fullName)
+        static void MatchProperty(List<IDocumentationMember> members, XmlNode node)
         {
-            string name = fullName;
-
-            if (name.EndsWith(")"))
-            {
-                // has parameters, so strip them off
-                name = name.Substring(0, name.IndexOf("("));
-            }
-
-            return name.Substring(name.LastIndexOf(".") + 1);
-        }
-
-        private void ParseProperty(List<IDocumentationMember> members, XmlNode node)
-        {
-            Identifier member = Identifier.FromString(node.Attributes["name"].Value);
+            Identifier member = IdentifierFor.XmlString(node.Attributes["name"].Value);
 
             for (int i = 0; i < members.Count; i++)
             {
-                var propertyMember = members[i] as UndocumentedProperty;
-
-                if (propertyMember != null && propertyMember.Match(member))
-                    members[i] = new DocumentedProperty(member, node, propertyMember.Property, propertyMember.TargetType);
+                var reflected = members[i] as ReflectedProperty;
+                if (reflected != null && reflected.Match(member))
+                    members[i] = new DocumentedProperty(reflected.Name, node, reflected.Property, reflected.TargetType);
             }
         }
 
-        private void ParseEvent(List<IDocumentationMember> members, XmlNode node)
+        static void MatchEvent(List<IDocumentationMember> members, XmlNode node)
         {
-            var member = Identifier.FromString(node.Attributes["name"].Value);
+            var member = IdentifierFor.XmlString(node.Attributes["name"].Value);
 
             for (int i = 0; i < members.Count; i++)
             {
-                var eventMember = members[i] as UndocumentedEvent;
-
-                if (eventMember != null && eventMember.Match(member))
-                    members[i] = new DocumentedEvent(member, node, eventMember.Event, eventMember.TargetType);
+                var reflected = members[i] as ReflectedEvent;
+                if (reflected != null && reflected.Match(member))
+                    members[i] = new DocumentedEvent(reflected.Name, node, reflected.Event, reflected.TargetType);
             }
         }
 
-        private void ParseField(List<IDocumentationMember> members, XmlNode node)
+        static void MatchField(List<IDocumentationMember> members, XmlNode node)
         {
-            var member = Identifier.FromString(node.Attributes["name"].Value);
+            var member = IdentifierFor.XmlString(node.Attributes["name"].Value);
 
             for (int i = 0; i < members.Count; i++)
             {
-                var eventMember = members[i] as UndocumentedField;
-
-                if (eventMember != null && eventMember.Match(member))
-                    members[i] = new DocumentedField(member, node, eventMember.Field, eventMember.TargetType);
+                var reflected = members[i] as ReflectedField;
+                if (reflected != null && reflected.Match(member))
+                    members[i] = new DocumentedField(reflected.Name, node, reflected.Field, reflected.TargetType);
             }
         }
 
-        private void ParseMethod(List<IDocumentationMember> members, XmlNode node)
+        static void MatchMethod(List<IDocumentationMember> members, XmlNode node)
         {
-            string name = node.Attributes["name"].Value.Substring(2);
-            Identifier member = Identifier.FromString(node.Attributes["name"].Value);
-            string methodName = GetMethodName(name);
-            int index = members.FindIndex(x => member.Equals(x.Name));
-
-            if (index == -1) return; // TODO: Privates
-            if (methodName == "#ctor") return; // TODO: Fix constructors
+            Identifier member = IdentifierFor.XmlString(node.Attributes["name"].Value);   
 
             for (int i = 0; i < members.Count; i++)
             {
-                var methodMember = members[i] as UndocumentedMethod;
-
-                if (methodMember != null && methodMember.Match(member))
-                    members[i] = new DocumentedMethod(member, node, methodMember.Method, methodMember.TargetType);
+                var reflected = members[i] as ReflectedMethod;
+                if (reflected != null && reflected.Match(member))
+                    members[i] = new DocumentedMethod(reflected.Name, node, reflected.Method, reflected.TargetType);
             }
         }
 
-        private void ParseType(List<IDocumentationMember> members, XmlNode node)
+        static void MatchType(List<IDocumentationMember> members, XmlNode node)
         {
-            var identifier = Identifier.FromString(node.Attributes["name"].Value);
+            var identifier = IdentifierFor.XmlString(node.Attributes["name"].Value);
             var positionOfUndocumentedType = members.FindIndex(m =>
-            {
-                var typeMember = m as UndocumentedType;
-                return typeMember != null && typeMember.Match(identifier);
-            });
+                {
+                    var reflected = m as ReflectedType;
+                    return reflected != null && reflected.Match(identifier);
+                });
 
             if (positionOfUndocumentedType >= 0)
             {

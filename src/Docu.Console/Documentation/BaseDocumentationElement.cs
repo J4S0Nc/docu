@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Docu.Documentation.Comments;
 using Docu.Parsing.Model;
 
@@ -22,25 +20,38 @@ namespace Docu.Documentation
 
         public virtual bool HasDocumentation
         {
-            get { return !(Summary.IsEmpty && Remarks.IsEmpty && Value.IsEmpty); }
+            get { return !Summary.IsEmpty || IsObsolete || !Remarks.IsEmpty || !Value.IsEmpty; }
         }
 
-        public string Name { get; private set; }
-        public bool IsExternal { get; private set; }
-        public bool IsResolved { get; protected set; }
-        public Summary Summary { get; set; }
-        public Remarks Remarks { get; set; }
-        public Value Value { get; set; }
+        public bool IsObsolete
+        {
+            get { return !string.IsNullOrEmpty(ObsoleteReason); }
+        }
+
         public MultilineCode Example { get; set; }
 
-        public bool IsIdentifiedBy(Identifier otherIdentifier)
-        {
-            return identifier.Equals(otherIdentifier);
-        }
+        public bool IsExternal { get; private set; }
+
+        public bool IsResolved { get; protected set; }
+
+        public string Name { get; private set; }
+
+        public Remarks Remarks { get; set; }
+
+        public Summary Summary { get; set; }
+
+        public Value Value { get; set; }
+
+        public string ObsoleteReason { get; set; }
 
         public virtual void ConvertToExternalReference()
         {
             IsExternal = true;
+        }
+
+        public bool IsIdentifiedBy(Identifier otherIdentifier)
+        {
+            return identifier.Equals(otherIdentifier);
         }
     }
 }

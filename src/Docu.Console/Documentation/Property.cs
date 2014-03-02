@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Docu.Parsing.Model;
 
 namespace Docu.Documentation
@@ -15,11 +16,13 @@ namespace Docu.Documentation
             IsStatic = identifier.IsStatic;
         }
 
-        public DeclaredType Type { get; set; }
+        PropertyInfo declaration;
+
         public bool HasGet { get; private set; }
         public bool HasSet { get; private set; }
         public bool IsStatic { get; private set; }
         public IReferencable ReturnType { get; set; }
+        public DeclaredType Type { get; set; }
 
         public string FullName
         {
@@ -40,31 +43,47 @@ namespace Docu.Documentation
                 var property = referencable as Property;
 
                 if (property == null)
+                {
                     throw new InvalidOperationException("Cannot resolve to '" + referencable.GetType().FullName + "'");
+                }
 
                 ReturnType = property.ReturnType;
 
                 if (!ReturnType.IsResolved)
+                {
                     ReturnType.Resolve(referencables);
+                }
+
+                declaration = property.declaration;
+                if (declaration != null && declaration.IsDefined(typeof(ObsoleteAttribute)))
+                {
+                    ObsoleteReason = declaration.GetCustomAttribute<ObsoleteAttribute>().Message;
+                }
 
                 if (!Summary.IsResolved)
+                {
                     Summary.Resolve(referencables);
+                }
 
                 if (!Remarks.IsResolved)
+                {
                     Remarks.Resolve(referencables);
+                }
             }
             else
+            {
                 ConvertToExternalReference();
+            }
         }
 
         public static Property Unresolved(PropertyIdentifier propertyIdentifier, DeclaredType type)
         {
-            return new Property(propertyIdentifier, type) { IsResolved = false };
+            return new Property(propertyIdentifier, type) {IsResolved = false};
         }
 
-        public static Property Unresolved(PropertyIdentifier propertyIdentifier, DeclaredType type, IReferencable returnType)
+        public static Property Unresolved(PropertyIdentifier propertyIdentifier, DeclaredType type, PropertyInfo declaration, IReferencable returnType)
         {
-            return new Property(propertyIdentifier, type) { IsResolved = false, ReturnType = returnType };
+            return new Property(propertyIdentifier, type) {IsResolved = false, declaration = declaration, ReturnType = returnType};
         }
     }
 }

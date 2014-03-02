@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Docu.Documentation;
-using Docu.Parsing;
 using Docu.Parsing.Model;
 using DeclaredType=Docu.Documentation.DeclaredType;
 
@@ -20,18 +19,6 @@ namespace Docu.Tests
 
             return method;
         }
-
-        protected MethodInfo Method<T>(Expression<Func<T, object>> methodAction)
-        {
-            var method = ((MethodCallExpression)methodAction.Body).Method;
-
-            if (method.IsGenericMethod)
-                return method.GetGenericMethodDefinition();
-
-            return method;
-        }
-
-
 
         protected PropertyInfo Property<T>(Expression<Func<T, object>> propertyAction)
         {
@@ -62,23 +49,16 @@ namespace Docu.Tests
 
         protected Namespace Namespace(string ns)
         {
-            return new Namespace(Identifier.FromNamespace(ns));
+            return new Namespace(IdentifierFor.Namespace(ns));
         }
 
         protected DeclaredType Type<T>(Namespace ns)
         {
-            var type = new DeclaredType(Identifier.FromType(typeof(T)), ns);
+            var type = new DeclaredType(IdentifierFor.Type(typeof(T)), ns);
 
             ns.AddType(type);
 
             return type;
-        }
-
-        protected IEnumerable<IDocumentationMember> DocMembers(params Type[] types)
-        {
-            var documentableMembers = new DocumentableMemberFinder();
-
-            return documentableMembers.GetMembersForDocumenting(types);
         }
     }
 }

@@ -4,9 +4,9 @@
         var pre = $('pre', div);
 
         a.pre = pre;
-        a.preVisible = false;
-        pre.hide();
-        a.click(function() {
+        a.preVisible = true;
+
+        a.click(function () {
             if (a.preVisible) {
                 a.pre.hide();
                 a.text('Show Example');

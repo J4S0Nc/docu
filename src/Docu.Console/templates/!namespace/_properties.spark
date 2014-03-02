@@ -5,9 +5,14 @@
 		<h4>
       <if condition="property.IsStatic">static</if> ${Format(property.ReturnType)} <strong>${h(property.Name)}</strong> <if condition="property.HasGet">get;</if> <if condition="property.HasSet">set;</if>
 		</h4>
-		<div class="content">
+		<div class="content" if="property.HasDocumentation">
 			<comment content="property.Summary" />
 			<remarks content="property.Remarks" />
+			<if condition="property.IsObsolete">
+			<div id="warning">
+			  <b>Obsolete:</b> ${property.ObsoleteReason}
+			</div>
+			</if>
 
 			<div class="return" if="property.ReturnType.HasDocumentation">
 				<h5>Property type</h5>

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-
 namespace Docu.Documentation.Comments
 {
-    public abstract class InlineList : BaseComment
+    using System.Collections.Generic;
+
+    public abstract class InlineList : Comment
     {
         protected InlineList()
         {
@@ -12,10 +12,21 @@ namespace Docu.Documentation.Comments
         public IList<InlineListItem> Items { get; set; }
     }
 
-    public class DefinitionList : InlineList{}
-    public class BulletList : InlineList{}
-    public class NumberList : InlineList{}
-    public class TableList : InlineList{}
+    public class DefinitionList : InlineList
+    {
+    }
+
+    public class BulletList : InlineList
+    {
+    }
+
+    public class NumberList : InlineList
+    {
+    }
+
+    public class TableList : InlineList
+    {
+    }
 
     public class InlineListItem
     {
@@ -28,5 +39,4 @@ namespace Docu.Documentation.Comments
         public Paragraph Term { get; set; }
         public Paragraph Definition { get; set; }
     }
-
 }

@@ -36,7 +36,6 @@ namespace Docu.Output
             }
 
             engine.ViewFolder = viewFolder;
-            // CompiledViewHolder.= null; // reset the cached views
         }
 
         public string Convert(string templateName, ViewData data, string relativeOutputPath)

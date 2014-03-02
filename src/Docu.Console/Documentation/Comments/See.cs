@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using Docu.Parsing.Model;
-
 namespace Docu.Documentation.Comments
 {
-    public class See : BaseComment, IReferrer
+    using System.Collections.Generic;
+    using Parsing.Model;
+
+    public sealed class See : Comment, IReferrer
     {
         public See(IReferencable reference)
         {
@@ -11,7 +11,7 @@ namespace Docu.Documentation.Comments
         }
 
         public IReferencable Reference { get; set; }
-        
+
         public override bool IsResolved
         {
             get { return Reference.IsResolved; }
